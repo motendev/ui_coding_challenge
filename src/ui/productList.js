@@ -1,52 +1,74 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import getProductData from '../services/productService'
+import ProductService from '../services/productService'
 
 
 class ProductList extends React.Component {
 
     constructor(props)
     {
+        let productService = new ProductService();
+
         super(props)
         this.state = {
             products: null,
+            selectedProduct: null,
             isLoaded: false,
-            error: null
+            error: null,
+            productService: productService
         }
 
-        getProductData().then(
+        productService.getProductData().then(
           (res) => {
             console.log(res)
-            this.setState({products:res})
+            this.setState({products:res, isLoaded: true})
           },
           (error) => 
-          console.log(error)
+          this.setState({error: error})
         )
     }
  
-    product() {
+    listProductItems() {
         if(!Array.isArray(this.state.products))
             return;
 
        return this.state.products.map((obj) =>
         <li key={obj.id.toString()}>
-            <b>{obj.name}</b>
+            <b onClick={() => this.selectProduct(obj.id)}>{obj.name}</b>
             <br/>
             <small>{obj.description}</small>
         </li>
        );
+    }
 
+    selectProduct(id) {
+      this.setState({selectedProduct: id})
     }
 
     render() {
 
-      const {products, isLoaded, error} = this.state
+      const {products, isLoaded, error, selectedProduct} = this.state
+
+      if(!isLoaded)
+        return (<div>Loading...</div>)
+
+      if(error)
+        return (<div>An error has occurred</div>)
+
+      if(selectedProduct)
+        return (
+          <div>
+            {selectedProduct}
+            <br/>
+            <button onClick={() => this.selectProduct(null)}>Back</button>
+          </div>
+        )
 
       return (
         <div className="productList">
           <h1>Listing products</h1>
         <ul>
-            {this.product()}
+            {this.listProductItems()}
         </ul>
         </div>
       );
