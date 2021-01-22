@@ -30,11 +30,10 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1>Glorious product store of the glorious state of New Productonia</h1>
+          <h1>XYZ Clothing</h1>
         </header>
         <main>
           <CurrencyPicker currencyService={this.state.currencyService} defaultCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange.bind(this)} />
-          {this.state.currentCurrency}
           <ProductList productService={this.state.productService} />
         </main>
       </div>

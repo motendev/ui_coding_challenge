@@ -35,17 +35,36 @@ class Product extends React.Component {
         this.setState(productState)
     }
 
+    renderProductList()
+    {
+        return (
+        <div>
+            <h3>Related Products</h3>
+            <div>
+                <ProductList 
+                    products={this.state.relatedProducts} 
+                    productService={this.props.productService} 
+                    onProductChange={this.onProductChange.bind(this)}
+                    allowDirectPurchase={false}
+                    allowView={false}
+                />
+            </div>
+        </div>
+        )        
+    }
+
     render() {
         
         return (
             <div key={this.state.productId}>
-                {this.state.product.name}
-                {this.state.product.description}
-                {this.state.product.price.amount}
-
-                <div>
-                    <ProductList products={this.state.relatedProducts} productService={this.props.productService} onProductChange={this.onProductChange.bind(this)} />
+                <div className="card" style={{width: 18 + 'rem'}}>
+                    <div className="card-body">
+                        <h5 className="card-title">{this.state.product.name}</h5>
+                        <p className="card-text">{this.state.product.description}</p>
+                        <a href="#" className="btn btn-primary">${this.state.product.price.amount}</a>      
+                    </div>
                 </div>
+                {this.renderProductList()}
             </div>
         )
     }

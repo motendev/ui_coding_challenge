@@ -34,16 +34,16 @@ class ProductList extends React.Component {
             return;
 
        return this.state.products.map((obj) =>
-        <li key={obj.id.toString()}>
-            <b onClick={() => this.selectProduct(obj.id)}>{obj.name}</b>
-            <br/>
-            <small>{obj.description}</small>
-        </li>
+        <tr key={obj.id.toString()}>
+            <th>{obj.id}</th>
+            <td>{obj.name}</td>
+            <td>${obj.price.amount}</td>
+            <td><button type="button" className="btn btn-primary" onClick={() => this.selectProduct(obj.id)}>View</button></td>     
+        </tr>
        );
     }
 
     selectProduct(id) {
-
       if(this.state.onProductChange)
         this.state.onProductChange(id)
       else 
@@ -65,16 +65,25 @@ class ProductList extends React.Component {
           <div>
             <Product productId={selectedProduct} productService={this.props.productService} />
             <br/>
-            <button onClick={() => this.selectProduct(null)}>Back</button>
+            <button type="button" className="btn btn-primary" onClick={() => this.selectProduct(null)}>View All</button>
           </div>
         )
 
       return (
         <div className="productList">
-          <h1>Listing products</h1>
-          <ul>
-              {this.listProductItems()}
-          </ul>
+          <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.listProductItems()}
+              </tbody>
+          </table>
         </div>
       );
     }
