@@ -36,16 +36,17 @@ class Product extends React.Component {
     }
 
     render() {
+        
         return (
-        <div key={this.state.productId}>
-            {this.state.product.name}
-            {this.state.product.description}
-            {this.state.product.price.amount}
+            <div key={this.state.productId}>
+                {this.state.product.name}
+                {this.state.product.description}
+                {this.state.product.price.amount}
 
-            <div>
-                <ProductList products={this.state.relatedProducts} productService={this.props.productService} onProductChange={this.onProductChange.bind(this)} />
+                <div>
+                    <ProductList products={this.state.relatedProducts} productService={this.props.productService} onProductChange={this.onProductChange.bind(this)} />
+                </div>
             </div>
-        </div>
         )
     }
 }

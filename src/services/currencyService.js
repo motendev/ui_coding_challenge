@@ -1,6 +1,16 @@
-import fetcher from '../code/fetcher'
+import AbstractService from "./abstractService";
 
-export default function getCurrencyInformation()
+export default class CurrencyService extends AbstractService
 {
-    return fetcher('/data/exchange_rates.json')
+    constructor()
+    {
+        super('base', '/data/exchange_rates.json')
+    }
+
+    convertFromXToY(xId, yId, xPrice)
+    {
+        var xCurrency = super.getById(xId);
+        var yCurrency = super.getById(yId);
+        return yCurrency.rates[xId] * xPrice
+    }
 }
