@@ -19,8 +19,8 @@ class Product extends React.Component {
 
     buildProductState(id) 
     {
-        var product = this.props.productService.getProductById(id);
-        var relatedProducts = product.relatedProducts.map(relId => this.props.productService.getProductById(relId))
+        var product = this.props.productService.getById(id);
+        var relatedProducts = product.relatedProducts.map(relId => this.props.productService.getById(relId))
 
         return {
             productId: id,

@@ -18,7 +18,7 @@ class ProductList extends React.Component {
 
         if(this.state.products.length === 0)
         {
-          this.props.productService.getCachedProductData().then(
+          this.props.productService.getCachedData().then(
             (res) => {
               console.log(res)
               this.setState({products:res, isLoaded: true})

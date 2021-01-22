@@ -19,7 +19,6 @@ export default class AbstractService
 
     //Get product data from cache if available
     getCachedData(cacheBust) {
-
         if(this.cache === null || cacheBust)
         {
             return this.getData().then(
