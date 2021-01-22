@@ -8,37 +8,42 @@ class Product extends React.Component {
     constructor(props)
     {
         super(props)
-        this.state = {
-            productId: this.props.productId,
-            product:null,
-            relatedProducts: [],
-            isEditMode: false
-        }
 
-        this.onProductChange(this.state.productId)
+        var productState = this.buildProductState(this.props.productId)
+
+        this.state = {
+            ...productState,
+            isEditMode: false
+        }        
     }
 
-    onProductChange(id) 
+    buildProductState(id) 
     {
         var product = this.props.productService.getProductById(id);
         var relatedProducts = product.relatedProducts.map(relId => this.props.productService.getProductById(relId))
 
-        this.state = {
+        return {
             productId: id,
             product: product,
             relatedProducts: relatedProducts
         }
     }
 
+    onProductChange(id)
+    {
+        var productState = this.buildProductState(id)
+        this.setState(productState)
+    }
+
     render() {
         return (
-        <div>
+        <div key={this.state.productId}>
             {this.state.product.name}
             {this.state.product.description}
             {this.state.product.price.amount}
 
             <div>
-                <ProductList products={this.state.relatedProducts} productService={this.props.productService} onProductChange={this.onProductChange} />
+                <ProductList products={this.state.relatedProducts} productService={this.props.productService} onProductChange={this.onProductChange.bind(this)} />
             </div>
         </div>
         )
