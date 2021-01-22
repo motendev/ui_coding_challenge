@@ -1,31 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ProductService from '../services/productService'
+import Product from './product'
 
 
 class ProductList extends React.Component {
 
     constructor(props)
     {
-        let productService = new ProductService();
-
         super(props)
         this.state = {
-            products: null,
+            products: props.products ?? [],
             selectedProduct: null,
-            isLoaded: false,
+            isLoaded: (props.products ?? []).length >= 1,
             error: null,
-            productService: productService
+            onProductChange: this.props['onProductChange']
         }
 
-        productService.getProductData().then(
-          (res) => {
-            console.log(res)
-            this.setState({products:res, isLoaded: true})
-          },
-          (error) => 
-          this.setState({error: error})
-        )
+        if(this.state.products.length === 0)
+        {
+          this.props.productService.getCachedProductData().then(
+            (res) => {
+              console.log(res)
+              this.setState({products:res, isLoaded: true})
+            },
+            (error) => 
+              this.setState({error: error})
+          )
+        }        
     }
  
     listProductItems() {
@@ -42,7 +43,11 @@ class ProductList extends React.Component {
     }
 
     selectProduct(id) {
-      this.setState({selectedProduct: id})
+
+      if(this.state.onProductChange)
+        this.state.onProductChange(id)
+      else 
+        this.setState({selectedProduct: id})
     }
 
     render() {
@@ -58,7 +63,7 @@ class ProductList extends React.Component {
       if(selectedProduct)
         return (
           <div>
-            {selectedProduct}
+            <Product productId={selectedProduct} productService={this.props.productService} />
             <br/>
             <button onClick={() => this.selectProduct(null)}>Back</button>
           </div>
@@ -67,9 +72,9 @@ class ProductList extends React.Component {
       return (
         <div className="productList">
           <h1>Listing products</h1>
-        <ul>
-            {this.listProductItems()}
-        </ul>
+          <ul>
+              {this.listProductItems()}
+          </ul>
         </div>
       );
     }
