@@ -1,6 +1,10 @@
-import fetcher from '../code/fetcher'
+import AbstractService from './abstractService.js'
 
-export default function getProductData()
+export default class ProductService extends AbstractService
 {
-    return fetcher('/data/products.json')
+    constructor()
+    {
+        super('id', '/data/products.json')
+        this.productCache = null;
+    }
 }
