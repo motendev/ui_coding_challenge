@@ -44,9 +44,9 @@ class Product extends React.Component {
                 <ProductList 
                     products={this.state.relatedProducts} 
                     productService={this.props.productService} 
+                    currencyService={this.props.currencyService}
+                    currentCurrency={this.props.currentCurrency}
                     onProductChange={this.onProductChange.bind(this)}
-                    allowDirectPurchase={false}
-                    allowView={false}
                 />
             </div>
         </div>
@@ -61,7 +61,9 @@ class Product extends React.Component {
                     <div className="card-body">
                         <h5 className="card-title">{this.state.product.name}</h5>
                         <p className="card-text">{this.state.product.description}</p>
-                        <a href="#" className="btn btn-primary">${this.state.product.price.amount}</a>      
+                        <a href="#" className="btn btn-primary">
+                        ${this.props.currencyService.convertFromXToY(this.props.currentCurrency, this.state.product.price.base, this.state.product.price.amount)}
+                        </a>      
                     </div>
                 </div>
                 {this.renderProductList()}

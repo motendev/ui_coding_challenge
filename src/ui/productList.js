@@ -37,7 +37,7 @@ class ProductList extends React.Component {
         <tr key={obj.id.toString()}>
             <th>{obj.id}</th>
             <td>{obj.name}</td>
-            <td>${obj.price.amount}</td>
+            <td>${this.props.currencyService.convertFromXToY(this.props.currentCurrency, obj.price.base, obj.price.amount)}</td>
             <td><button type="button" className="btn btn-primary" onClick={() => this.selectProduct(obj.id)}>View</button></td>     
         </tr>
        );
@@ -63,7 +63,12 @@ class ProductList extends React.Component {
       if(selectedProduct)
         return (
           <div>
-            <Product productId={selectedProduct} productService={this.props.productService} />
+            <Product 
+              productId={selectedProduct} 
+              productService={this.props.productService} 
+              currencyService={this.props.currencyService} 
+              currentCurrency={this.props.currentCurrency}
+            />
             <br/>
             <button type="button" className="btn btn-primary" onClick={() => this.selectProduct(null)}>View All</button>
           </div>

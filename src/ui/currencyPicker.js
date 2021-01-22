@@ -9,7 +9,7 @@ class CurrencyPicker extends React.Component {
         super(props)
 
         this.state = {
-            defaultCurrency: props.defaultCurrency,
+            currentCurrency: props.defaultCurrency,
             currencies: [],
             onCurrencyChange: this.props.onCurrencyChange
         }
@@ -36,7 +36,7 @@ class CurrencyPicker extends React.Component {
     render() {
         
         return (
-            <select onChange={(e)=>this.state.onCurrencyChange(e.target.value)} value={this.state.defaultCurrency}>
+            <select onChange={(e)=>this.state.onCurrencyChange(e.target.value)}>
                 {this.listCurrencies()}
             </select>
         )

@@ -9,8 +9,10 @@ export default class CurrencyService extends AbstractService
 
     convertFromXToY(xId, yId, xPrice)
     {
-        var xCurrency = super.getById(xId);
+        if(xId === yId)
+        return xPrice;
+        
         var yCurrency = super.getById(yId);
-        return yCurrency.rates[xId] * xPrice
+        return Math.round(yCurrency.rates[xId] * xPrice, 2)
     }
 }

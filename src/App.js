@@ -34,7 +34,7 @@ class App extends React.Component {
         </header>
         <main>
           <CurrencyPicker currencyService={this.state.currencyService} defaultCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange.bind(this)} />
-          <ProductList productService={this.state.productService} />
+          <ProductList productService={this.state.productService} currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} />
         </main>
       </div>
     );
