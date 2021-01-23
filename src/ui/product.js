@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CurrencyPicker from './currencyPicker';
 import ProductList from './productList'
+import {setProperty} from '../code/setProperty'
 
 
 class Product extends React.Component {
@@ -70,14 +71,15 @@ class Product extends React.Component {
         this.props.productService.insertAtId(this.state.product.id, this.state.workingProduct);
         if(this.props['onProductChange'])
         {
-            //this.props.onProductChange(this.state.workingProduct.id)
+            this.props.onProductChange(this.state.workingProduct.id)
         }            
         this.setState({isEditMode:false, product:this.state.workingProduct, workingProduct:null});
     }
 
 
     productEditFormChange(property, value) {
-        this.state.workingProduct[property] = value;
+
+        setProperty(this.state.workingProduct, property, value)
         this.setState({workingProduct:this.state.workingProduct});
     }
 
@@ -122,7 +124,7 @@ class Product extends React.Component {
                     </div>
                     <div className="col-sm">
                         <label htmlFor="productCurrency" className="form-label">Currency</label>
-                        <CurrencyPicker name="productCUrrency" key="productCurrency" currencyService={this.props.currencyService} currentCurrency={this.state.workingProduct.price.base} onCurrencyChange={this.onCurrencyChange}/>
+                        <CurrencyPicker name="productCurrency" key="productCurrency" currencyService={this.props.currencyService} currentCurrency={this.state.workingProduct.price.base} onCurrencyChange={this.onCurrencyChange}/>
                     </div>
                 </div>
 
