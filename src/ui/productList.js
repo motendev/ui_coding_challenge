@@ -18,7 +18,7 @@ class ProductList extends React.Component {
 
     componentDidMount()
     {
-      if(!this.isLoaded)
+      if(!this.state.isLoaded)
       {
         this.loadData()
       }        
