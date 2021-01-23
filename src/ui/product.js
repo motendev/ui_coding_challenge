@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CurrencyPicker from './currencyPicker';
 import ProductList from './productList'
+import {setProperty} from '../code/setProperty'
 
 
 class Product extends React.Component {
@@ -21,6 +22,7 @@ class Product extends React.Component {
         this.saveProduct = this.saveProduct.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onCurrencyChange = this.onCurrencyChange.bind(this);
+        this.onRelatedProductsChange = this.onRelatedProductsChange.bind(this);
     }
 
     buildProductState(id) 
@@ -67,13 +69,21 @@ class Product extends React.Component {
 
     saveProduct(e)   {   
         e.preventDefault();
-        this.props.productService.saveData(this.state.workingProduct);    
-        this.setState({isEditMode:false, product:this.state.workingProduct, workingProduct:null});
+        this.props.productService.insertAtId(this.state.product.id, this.state.workingProduct);
+        if(this.props['onProductChange'])
+        {
+            this.props.onProductChange(this.state.workingProduct.id)
+        }            
+
+        var state = this.buildProductState(this.state.workingProduct.id);
+
+        this.setState({...state, isEditMode:false, product:this.state.workingProduct, workingProduct:null});
     }
 
 
     productEditFormChange(property, value) {
-        this.state.workingProduct[property] = value;
+
+        setProperty(this.state.workingProduct, property, value)
         this.setState({workingProduct:this.state.workingProduct});
     }
 
@@ -85,6 +95,35 @@ class Product extends React.Component {
     onCurrencyChange(currency)
     {
         this.productEditFormChange('price.base', currency);
+    }
+
+    onRelatedProductsChange(e)
+    {
+        var value = Array.from(e.target.selectedOptions, option => parseInt(option.value));
+        
+        this.state.workingProduct.relatedProducts = value;
+
+        this.setState({workingProduct: this.state.workingProduct})
+    }
+
+    buildRelatedProductSelect()
+    {
+        function productAsSelectOption(product){return (<option key={product.id} value={product.id}>{product.name}</option>)};
+
+        var allProducts = this.props.productService.cache;
+
+        return (
+            <select 
+                name="relatedProducts"
+                className="form-select" 
+                multiple
+                aria-label="multiple select relatedProducts"
+                value={this.state.workingProduct.relatedProducts}
+                onChange={this.onRelatedProductsChange}
+            >
+                {allProducts.map(productAsSelectOption)}                
+            </select>
+        )
     }
 
     render() {
@@ -118,9 +157,11 @@ class Product extends React.Component {
                     </div>
                     <div className="col-sm">
                         <label htmlFor="productCurrency" className="form-label">Currency</label>
-                        <CurrencyPicker name="productCUrrency" key="productCurrency" currencyService={this.props.currencyService} defaultCurrency={this.state.workingProduct.price.base} onCurrencyChange={this.onCurrencyChange}/>
+                        <CurrencyPicker name="productCurrency" key="productCurrency" currencyService={this.props.currencyService} currentCurrency={this.state.workingProduct.price.base} onCurrencyChange={this.onCurrencyChange}/>
                     </div>
                 </div>
+
+                {this.buildRelatedProductSelect()}
 
                 <button type="button" className="btn btn-primary" onClick={this.saveProduct}>Save</button>
             </form>
