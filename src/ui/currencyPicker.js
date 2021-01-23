@@ -27,7 +27,7 @@ class CurrencyPicker extends React.Component {
     listCurrencies()
     {
         return this.state.currencies.map((obj) =>
-            <option value={obj.base.toString()}>
+            <option key={obj.base} value={obj.base} {...(obj.base === this.state.currentCurrency && {selected:true})}>
                 {obj.base}
             </option>
        );
@@ -36,7 +36,7 @@ class CurrencyPicker extends React.Component {
     render() {
         
         return (
-            <select onChange={(e)=>this.state.onCurrencyChange(e.target.value)}>
+            <select className="form-select" aria-label="Default select siteCurrency" onChange={(e)=>this.state.onCurrencyChange(e.target.value)}>
                 {this.listCurrencies()}
             </select>
         )
