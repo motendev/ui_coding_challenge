@@ -122,7 +122,7 @@ class Product extends React.Component {
                     </div>
                     <div className="col-sm">
                         <label htmlFor="productCurrency" className="form-label">Currency</label>
-                        <CurrencyPicker name="productCUrrency" key="productCurrency" currencyService={this.props.currencyService} defaultCurrency={this.state.workingProduct.price.base} onCurrencyChange={this.onCurrencyChange}/>
+                        <CurrencyPicker name="productCUrrency" key="productCurrency" currencyService={this.props.currencyService} currentCurrency={this.state.workingProduct.price.base} onCurrencyChange={this.onCurrencyChange}/>
                     </div>
                 </div>
 
