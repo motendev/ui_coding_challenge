@@ -29,7 +29,7 @@ export default class AbstractService
             );
         }
 
-        return new Promise(x => this.cache);        
+        return new Promise((resolve, reject) => resolve(this.cache));        
     }
 
     //Get product id from cache or list of provided products, does not fill cache if empty
