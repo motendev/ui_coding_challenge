@@ -35,10 +35,30 @@ export default class AbstractService
     //Get product id from cache or list of provided products, does not fill cache if empty
     getById(id, existingDataSet) {
 
+        var array = this.findIndexOfId(id, existingDataSet);
+
+        //multiple ids, undefined behaviour
+        if(array.length > 1)
+            return undefined;
+
+        //not found
+        if(array.length == 0)
+            return null;
+
+        return array[0];
+    }
+
+    findIndexOfId(id, existingDataSet)
+    {
         if(existingDataSet === null || this.cache === null)
             return;
         
-        //FIXME: array may be empty
-        return (existingDataSet ?? this.cache).filter((obj) => obj[this.keyAccessor] == id)[0]
+        return (existingDataSet ?? this.cache).filter((obj) => obj[this.keyAccessor] == id)
+    }
+
+    saveData(data) {
+        var id = data[this.keyAccessor];
+        var index = this.findIndexOfId(id);
+        this.cache[index] = data;
     }
 }
