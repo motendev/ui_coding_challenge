@@ -28,12 +28,16 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1>XYZ Clothing</h1>
-        </header>
+      <div className="container">
+        <nav className="navbar navbar-expand-sm">
+          <div className="container-fluid">
+            <span className="navbar-brand">XYZ Clothing</span>
+            <div className="me-2">
+              <CurrencyPicker currencyService={this.state.currencyService} defaultCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange.bind(this)} />
+            </div>            
+          </div>
+        </nav>
         <main>
-          <CurrencyPicker currencyService={this.state.currencyService} defaultCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange.bind(this)} />
           <ProductList productService={this.state.productService} currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} />
         </main>
       </div>
