@@ -38,7 +38,7 @@ class CurrencyPicker extends React.Component {
     render() {
         
         return (
-            <select className="form-select" aria-label="Default select siteCurrency" onChange={(e)=>this.state.onCurrencyChange(e.target.value)} defaultValue={this.props.currentCurrency}>
+            <select className="form-select" aria-label="Default select siteCurrency" onChange={(e)=>this.state.onCurrencyChange(e.target.value)} value={this.props.currentCurrency} defaultValue={this.props.currentCurrency}>
                 {this.listCurrencies()}
             </select>
         )
