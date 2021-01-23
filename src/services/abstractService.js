@@ -35,7 +35,7 @@ export default class AbstractService
     //Get product id from cache or list of provided products, does not fill cache if empty
     getById(id, existingDataSet) {
 
-        var array = this.findIndexOfId(id, existingDataSet);
+        var array = this.filterById(id, existingDataSet);
 
         //multiple ids, undefined behaviour
         if(array.length > 1)
@@ -48,7 +48,7 @@ export default class AbstractService
         return array[0];
     }
 
-    findIndexOfId(id, existingDataSet)
+    filterById(id, existingDataSet)
     {
         if(existingDataSet === null || this.cache === null)
             return;
@@ -56,9 +56,32 @@ export default class AbstractService
         return (existingDataSet ?? this.cache).filter((obj) => obj[this.keyAccessor] == id)
     }
 
-    saveData(data) {
-        var id = data[this.keyAccessor];
-        var index = this.findIndexOfId(id);
+    findIndexById(id, existingDataSet)
+    {
+        if(existingDataSet === null || this.cache === null)
+            return;
+        
+        return (existingDataSet ?? this.cache).findIndex((obj) => obj[this.keyAccessor] == id)
+    }
+
+    insertAtId(id, data) {
+
+        //data.id is new, check for conflict
+        if(id !== data.id)
+        {
+            var existingData = this.filterById(data.id);
+
+            if(existingData.length > 0)
+                return null;
+        }
+
+        var index = this.findIndexById(id);
+
+        //FIXME: throw exception?
+        if(index === -1)           
+            return null; 
+
+        //FIXME: race conditions?
         this.cache[index] = data;
     }
 }

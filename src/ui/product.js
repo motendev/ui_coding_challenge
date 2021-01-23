@@ -67,7 +67,11 @@ class Product extends React.Component {
 
     saveProduct(e)   {   
         e.preventDefault();
-        this.props.productService.saveData(this.state.workingProduct);    
+        this.props.productService.insertAtId(this.state.product.id, this.state.workingProduct);
+        if(this.props['onProductChange'])
+        {
+            //this.props.onProductChange(this.state.workingProduct.id)
+        }            
         this.setState({isEditMode:false, product:this.state.workingProduct, workingProduct:null});
     }
 
