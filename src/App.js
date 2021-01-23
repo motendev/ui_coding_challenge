@@ -33,7 +33,7 @@ class App extends React.Component {
           <div className="container-fluid">
             <span className="navbar-brand">XYZ Clothing</span>
             <div className="me-2">
-              <CurrencyPicker currencyService={this.state.currencyService} defaultCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange.bind(this)} />
+              <CurrencyPicker currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange.bind(this)} />
             </div>            
           </div>
         </nav>
