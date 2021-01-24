@@ -1,7 +1,6 @@
 import fetcher from '../code/fetcher'
 
-export default class AbstractService 
-{
+export default class AbstractService {
     constructor(keyAccessor, dataUrl) {
         if (new.target === AbstractService) {
             throw new TypeError("Cannot construct AbstractService instances directly");
@@ -19,17 +18,16 @@ export default class AbstractService
 
     //Get product data from cache if available
     getCachedData(cacheBust) {
-        if(this.cache === null || cacheBust)
-        {
+        if (this.cache === null || cacheBust) {
             return this.getData().then(
                 (res) => {
-                  this.cache = res;
-                  return res;
+                    this.cache = res;
+                    return res;
                 }
             );
         }
 
-        return new Promise((resolve, reject) => resolve(this.cache));        
+        return Promise.resolve(this.cache);
     }
 
     //Get product id from cache or list of provided products, does not fill cache if empty
@@ -38,48 +36,45 @@ export default class AbstractService
         var array = this.filterById(id, existingDataSet);
 
         //multiple ids, undefined behaviour
-        if(array.length > 1)
+        if (array.length > 1)
             return undefined;
 
         //not found
-        if(array.length == 0)
+        if (array.length == 0)
             return null;
 
         return array[0];
     }
 
-    filterById(id, existingDataSet)
-    {
-        if(existingDataSet === null || this.cache === null)
+    filterById(id, existingDataSet) {
+        if (existingDataSet === null || this.cache === null)
             return;
-        
+
         return (existingDataSet ?? this.cache).filter((obj) => obj[this.keyAccessor] == id)
     }
 
-    findIndexById(id, existingDataSet)
-    {
-        if(existingDataSet === null || this.cache === null)
+    findIndexById(id, existingDataSet) {
+        if (existingDataSet === null || this.cache === null)
             return;
-        
+
         return (existingDataSet ?? this.cache).findIndex((obj) => obj[this.keyAccessor] == id)
     }
 
     insertAtId(id, data) {
 
         //data.id is new, check for conflict
-        if(id !== data.id)
-        {
+        if (id !== data.id) {
             var existingData = this.filterById(data.id);
 
-            if(existingData.length > 0)
+            if (existingData.length > 0)
                 return null;
         }
 
         var index = this.findIndexById(id);
 
         //FIXME: throw exception?
-        if(index === -1)           
-            return null; 
+        if (index === -1)
+            return null;
 
         //FIXME: race conditions?
         this.cache[index] = data;
