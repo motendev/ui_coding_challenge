@@ -60,14 +60,15 @@ export default class AbstractService {
         return (existingDataSet ?? this.cache).findIndex((obj) => obj[this.keyAccessor] == id)
     }
 
+    doesIdExist(id) {
+        var existingData = this.filterById(id);
+        return existingData.length == 1;
+    }
+
     insertAtId(id, data) {
-
         //data.id is new, check for conflict
-        if (id !== data.id) {
-            var existingData = this.filterById(data.id);
-
-            if (existingData.length > 0)
-                return null;
+        if (id !== data.id && this.doesIdExist(data.id)) {
+            return null;
         }
 
         var index = this.findIndexById(id);
@@ -78,5 +79,14 @@ export default class AbstractService {
 
         //FIXME: race conditions?
         this.cache[index] = data;
+    }
+
+    upsert(id, data) {
+        //insert
+        var result = this.insertAtId(id, data);
+
+        //save
+        if(result === null)
+            this.cache.push(data);
     }
 }
