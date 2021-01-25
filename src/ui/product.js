@@ -4,6 +4,15 @@ import ProductList from './productList'
 import { setProperty } from '../code/setProperty'
 import SimpleReactValidator from 'simple-react-validator';
 
+/**
+ * Renders a product with the ability to also edit/create products
+ * Properties: 
+ *  currencyService (required)
+ *  productService (required)
+ *  currentCurrency (required)
+ *  productId (required) - the product to display
+ *  isEditMode (optional) - if provided the component will load the product form allowing the user to edit if productId is provided, or create a new product otherwise
+ */
 class Product extends React.Component {
 
     constructor(props) {

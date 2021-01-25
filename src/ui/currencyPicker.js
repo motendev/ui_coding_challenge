@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * Renders a list of products either from 'product' property or retrieved from required 'productService' property.
+ * Properties: 
+ *  onCurrencyChange (required) - new value will be passed when select.onChange occurs
+ */
 class CurrencyPicker extends React.Component {
 
     constructor(props) {

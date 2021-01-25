@@ -1,6 +1,15 @@
 import React from 'react';
 import Product from './product'
 
+/**
+ * Renders a list of products either from 'product' property or retrieved from required 'productService' property.
+ * Properties: 
+ *  currencyService (required)
+ *  productService (required)
+ *  currentCurrency (required)
+ *  onProductChange (optional) - if provided will be called when user selects a product, if not provided the default behaviour of viewing the product will occur
+ *  products (optional) - if provided, limits the productList to render the given data
+ */
 class ProductList extends React.Component {
 
     constructor(props) {

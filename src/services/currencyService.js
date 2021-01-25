@@ -5,6 +5,8 @@ export default class CurrencyService extends AbstractService {
         super('base', '/data/exchange_rates.json')
     }
 
+    // converts x currency to y currency
+    // e.g. AUD to USD = convertFrom('AUD', 'USD', 25.50)
     convertFromXToY(xId, yId, xPrice) {
         if (xId === yId)
             return xPrice;
