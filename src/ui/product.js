@@ -4,7 +4,6 @@ import ProductList from './productList'
 import { setProperty } from '../code/setProperty'
 import SimpleReactValidator from 'simple-react-validator';
 
-
 class Product extends React.Component {
 
     constructor(props) {
@@ -15,8 +14,7 @@ class Product extends React.Component {
 
         this.state = {
             ...productState,
-            isEditMode: !!this.props.isEditMode,
-            workingProduct: { price: { base: this.props.currentCurrency } }
+            isEditMode: !!this.props.isEditMode
         }
 
         this.editProduct = this.editProduct.bind(this);
@@ -35,6 +33,7 @@ class Product extends React.Component {
         });
     }
 
+    //Returns true if valid: id is not being used already or the productid is set in the state and is the same as the form product id
     idValidatorRule(val) {
         var possiblyNewId = parseInt(val);
         var idExists = this.props.productService.doesIdExist(parseInt(val));
@@ -50,7 +49,8 @@ class Product extends React.Component {
         return {
             productId: id,
             product: product,
-            relatedProducts: relatedProducts
+            relatedProducts: relatedProducts,
+            workingProduct: { price: { base: this.props.currentCurrency } }
         }
     }
 
@@ -77,23 +77,23 @@ class Product extends React.Component {
 
         //productId exists if editing an existing product 
         var id = this.state?.productId ?? workingProduct.id;
-        //Not a fan of this. Need automatically bind a form to a typed class object
+        //Not a fan of parsing data in a save method. Need to automatically bind a form to a stongly typed object
         id = parseInt(id);
         workingProduct.id = id;
+        //ensure property is declared, again solved by having a strongly typed object
         workingProduct.relatedProducts = workingProduct.relatedProducts ?? [];
-        
+
         this.props.productService.upsert(id, workingProduct);
 
         if (this.props['onProductChange']) {
             this.props.onProductChange(id)
         }
 
-        var productState = this.buildProductState(id);
 
+        var productState = this.buildProductState(id);
         this.setState({
             ...productState,
-            isEditMode: false,
-            workingProduct: { price: { base: this.props.currentCurrency } },
+            isEditMode: false
         });
     }
 
