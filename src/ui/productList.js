@@ -1,7 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Product from './product'
-
 
 class ProductList extends React.Component {
 

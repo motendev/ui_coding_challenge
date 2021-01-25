@@ -40,7 +40,7 @@ export default class AbstractService {
             return undefined;
 
         //not found
-        if (array.length == 0)
+        if (array.length === 0)
             return null;
 
         return array[0];
@@ -50,19 +50,19 @@ export default class AbstractService {
         if (existingDataSet === null || this.cache === null)
             return;
 
-        return (existingDataSet ?? this.cache).filter((obj) => obj[this.keyAccessor] == id)
+        return (existingDataSet ?? this.cache).filter((obj) => obj[this.keyAccessor] === id)
     }
 
     findIndexById(id, existingDataSet) {
         if (existingDataSet === null || this.cache === null)
             return;
 
-        return (existingDataSet ?? this.cache).findIndex((obj) => obj[this.keyAccessor] == id)
+        return (existingDataSet ?? this.cache).findIndex((obj) => obj[this.keyAccessor] === id)
     }
 
     doesIdExist(id) {
         var existingData = this.filterById(id);
-        return existingData.length == 1;
+        return existingData.length === 1;
     }
 
     insertAtId(id, data) {
@@ -86,7 +86,7 @@ export default class AbstractService {
         var result = this.insertAtId(id, data);
 
         //save
-        if(result === null)
+        if (result === null)
             this.cache.push(data);
     }
 }

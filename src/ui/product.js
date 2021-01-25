@@ -1,8 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { gt, lt } from '../code/reactValidators'
-import Form from 'react-validation/build/form';
-import Input from 'react-validation/build/input';
 import CurrencyPicker from './currencyPicker';
 import ProductList from './productList'
 import { setProperty } from '../code/setProperty'
@@ -13,13 +9,13 @@ class Product extends React.Component {
     constructor(props) {
         super(props)
 
-        if(!props.isEditMode)
+        if (!props.isEditMode)
             var productState = this.buildProductState(this.props.productId);
 
         this.state = {
             ...productState,
             isEditMode: !!this.props.isEditMode,
-            workingProduct: {price:{base:this.props.currentCurrency}}
+            workingProduct: { price: { base: this.props.currentCurrency } }
         }
 
         this.editProduct = this.editProduct.bind(this);
@@ -53,23 +49,6 @@ class Product extends React.Component {
         this.setState(productState);
     }
 
-    renderProductList() {
-        return (
-            <div>
-                <h3>Related Products</h3>
-                <div>
-                    <ProductList
-                        products={this.state.relatedProducts}
-                        productService={this.props.productService}
-                        currencyService={this.props.currencyService}
-                        currentCurrency={this.props.currentCurrency}
-                        onProductChange={this.onProductChange.bind(this)}
-                    />
-                </div>
-            </div>
-        )
-    }
-
     editProduct() {
         //quick clone with JSON
         this.setState({ isEditMode: true, workingProduct: JSON.parse(JSON.stringify(this.state.product)) });
@@ -78,10 +57,14 @@ class Product extends React.Component {
     saveProduct(e) {
         e.preventDefault();
 
-        //id should be an int, easier if this was a typescript class
-        this.state.workingProduct.id = parseInt(this.state.workingProduct.id);
-        //set related products
-        this.state.workingProduct.relatedProducts = this.state.workingProduct.relatedProducts ?? [];
+        //FIXME: doing this has made be realise the folly of complex objects being stored in state
+        //       should be a reference used to retrieve a value, probably why redux has stores
+        this.setState(
+            (state) => {
+                state.workingProduct.id = parseInt(state.workingProduct.id)
+                state.workingProduct.relatedProducts = this.state.workingProduct.relatedProducts ?? [];
+            }
+        );
 
         //product.id exists if editing an existing product 
         this.props.productService.upsert(this.state?.product?.id ?? this.state.workingProduct.id, this.state.workingProduct);
@@ -110,8 +93,11 @@ class Product extends React.Component {
 
     onRelatedProductsChange(e) {
         var value = Array.from(e.target.selectedOptions, option => parseInt(option.value));
-        this.state.workingProduct.relatedProducts = value;
-        this.setState({ workingProduct: this.state.workingProduct })
+        this.setState(
+            (state) => {
+                state.workingProduct.relatedProducts = value
+            }
+        );
     }
 
     buildRelatedProductSelect() {
@@ -133,25 +119,42 @@ class Product extends React.Component {
         )
     }
 
-    render() {    
+    renderProductList() {
+        return (
+            <div>
+                <h3>Related Products</h3>
+                <div>
+                    <ProductList
+                        products={this.state.relatedProducts}
+                        productService={this.props.productService}
+                        currencyService={this.props.currencyService}
+                        currentCurrency={this.props.currentCurrency}
+                        onProductChange={this.onProductChange.bind(this)}
+                    />
+                </div>
+            </div>
+        )
+    }
+
+    render() {
 
         if (this.state.isEditMode) {
             return (
-                <Form className="" onSubmit={this.saveProduct}>
+                <form className="" onSubmit={this.saveProduct}>
 
                     <div className="mb-3">
                         <label htmlFor="productId" className="form-label">Id</label>
-                        <Input type="number" className="form-control" id="productId" name="id" value={this.state?.workingProduct?.id} onChange={this.onChange} validations={[this.idValidator]} />
+                        <input type="number" className="form-control" id="productId" name="id" value={this.state?.workingProduct?.id} onChange={this.onChange} />
                     </div>
 
                     <div className="mb-3">
                         <label htmlFor="productName" className="form-label">Product Name</label>
-                        <Input type="text" className="form-control" id="productName" name="name" value={this.state?.workingProduct?.name} onChange={this.onChange} minLength="3" validations={[gt]} />
+                        <input type="text" className="form-control" id="productName" name="name" value={this.state?.workingProduct?.name} onChange={this.onChange} />
                     </div>
 
                     <div className="mb-3">
                         <label htmlFor="productDescription" className="form-label">Description</label>
-                        <Input type="text" className="form-control" id="productDescription" name="description" value={this.state?.workingProduct?.description} onChange={this.onChange} />
+                        <input type="text" className="form-control" id="productDescription" name="description" value={this.state?.workingProduct?.description} onChange={this.onChange} />
                     </div>
 
                     <div className="mb-3 row">
@@ -159,7 +162,7 @@ class Product extends React.Component {
                             <label htmlFor="productPrice" className="form-label">Price</label>
                             <div className="input-group">
                                 <span className="input-group-text">$</span>
-                                <Input type="text" className="form-control" id="productPrice" name="price.amount" value={this.state?.workingProduct?.price?.amount} onChange={this.onChange} minLength="1" validations={[gt]} />
+                                <input type="text" className="form-control" id="productPrice" name="price.amount" value={this.state?.workingProduct?.price?.amount} onChange={this.onChange} />
                             </div>
                         </div>
                         <div className="col-sm">
@@ -173,7 +176,7 @@ class Product extends React.Component {
                         {this.buildRelatedProductSelect()}
                     </div>
                     <button type="button" className="btn btn-primary" onClick={this.saveProduct}>Save</button>
-                </Form>
+                </form>
             )
         }
 

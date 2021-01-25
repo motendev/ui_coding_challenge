@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import ProductList from './ui/productList.js';
@@ -38,12 +37,8 @@ class App extends React.Component {
             return;
 
         return (
-            <div>
-                <ProductList productService={this.state.productService} currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} />
-                <button type="button" className="btn btn-primary" onClick={() => { this.setState({ createNewProduct: true }) }}>New Product</button>
-            </div>
+            <ProductList productService={this.state.productService} currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} />
         )
-
     }
 
     renderNewProduct() {
@@ -58,8 +53,17 @@ class App extends React.Component {
                 currentCurrency={this.state.currentCurrency}
                 isEditMode={true}
                 onProductChange={this.onProductCreated}
-                
             />
+        )
+    }
+
+    renderButtons() {
+        return (
+            <React.Fragment>
+                <button type="button" className="btn btn-primary" onClick={() => { this.setState({ createNewProduct: true }) }}>New Product</button>
+                <br />
+                <button type="button" className="btn btn-primary" hidden={!this.state.createNewProduct} onClick={() => { this.setState({ createNewProduct: false }) }}>Back</button>
+            </React.Fragment>
         )
     }
 
@@ -77,6 +81,7 @@ class App extends React.Component {
                 <main>
                     {this.renderList()}
                     {this.renderNewProduct()}
+                    {this.renderButtons()}
                 </main>
             </div>
         );
