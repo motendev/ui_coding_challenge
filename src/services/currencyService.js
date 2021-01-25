@@ -10,6 +10,6 @@ export default class CurrencyService extends AbstractService {
             return xPrice;
 
         var yCurrency = super.getById(yId);
-        return Math.round(yCurrency.rates[xId] * xPrice, 2)
+        return Math.round((yCurrency.rates[xId] * xPrice * 100)) / 100
     }
 }
