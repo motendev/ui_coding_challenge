@@ -2,6 +2,7 @@ import React from 'react';
 import CurrencyPicker from './currencyPicker';
 import ProductList from './productList'
 import { setProperty } from '../code/setProperty'
+import SimpleReactValidator from 'simple-react-validator';
 
 
 class Product extends React.Component {
@@ -23,15 +24,24 @@ class Product extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.onCurrencyChange = this.onCurrencyChange.bind(this);
         this.onRelatedProductsChange = this.onRelatedProductsChange.bind(this);
+
+        this.validator = new SimpleReactValidator({
+            validators: {
+                idValidator: {
+                    message: "The id specified is already in use.",
+                    rule: this.idValidatorRule.bind(this)
+                }
+            }
+        });
     }
 
-    idValidator = (value, props) => {
-        // get the maxLength from component's props
-        if (this.props.productService.doesIdExist(value)) {
-            // Return jsx
-            return <span className="error">Id already exists</span>
-        }
-    };
+    idValidatorRule(val) {
+        var possiblyNewId = parseInt(val);
+        var idExists = this.props.productService.doesIdExist(parseInt(val));
+
+        //not valid if the id already exists unless you are currently editing the duplicated id
+        return !idExists || this.state.productId === possiblyNewId;
+    }
 
     buildProductState(id) {
         var product = this.props.productService.getById(id);
@@ -45,8 +55,7 @@ class Product extends React.Component {
     }
 
     onProductChange(id) {
-        var productState = this.buildProductState(id);
-        this.setState(productState);
+        this.setState({ ...this.buildProductState(id) });
     }
 
     editProduct() {
@@ -57,34 +66,49 @@ class Product extends React.Component {
     saveProduct(e) {
         e.preventDefault();
 
-        //FIXME: doing this has made be realise the folly of complex objects being stored in state
-        //       should be a reference used to retrieve a value, probably why redux has stores
-        this.setState(
-            (state) => {
-                state.workingProduct.id = parseInt(state.workingProduct.id)
-                state.workingProduct.relatedProducts = this.state.workingProduct.relatedProducts ?? [];
-            }
-        );
-
-        //product.id exists if editing an existing product 
-        this.props.productService.upsert(this.state?.product?.id ?? this.state.workingProduct.id, this.state.workingProduct);
-
-        if (this.props['onProductChange']) {
-            this.props.onProductChange(this.state.workingProduct.id)
+        if (!this.validator.allValid()) {
+            this.validator.showMessages();
+            //force rerender as required by simple-react-validator
+            this.forceUpdate();
+            return;
         }
 
-        var state = this.buildProductState(this.state.workingProduct.id);
+        var workingProduct = this.state.workingProduct;
 
-        this.setState({ ...state, isEditMode: false, product: this.state.workingProduct, workingProduct: {} });
+        //productId exists if editing an existing product 
+        var id = this.state?.productId ?? workingProduct.id;
+        //Not a fan of this. Need automatically bind a form to a typed class object
+        id = parseInt(id);
+        workingProduct.id = id;
+        workingProduct.relatedProducts = workingProduct.relatedProducts ?? [];
+        
+        this.props.productService.upsert(id, workingProduct);
+
+        if (this.props['onProductChange']) {
+            this.props.onProductChange(id)
+        }
+
+        var productState = this.buildProductState(id);
+
+        this.setState({
+            ...productState,
+            isEditMode: false,
+            workingProduct: { price: { base: this.props.currentCurrency } },
+        });
     }
 
     productEditFormChange(property, value) {
-        setProperty(this.state.workingProduct, property, value)
-        this.setState({ workingProduct: this.state.workingProduct });
+        var workingProduct = { ...this.state.workingProduct };
+        setProperty(workingProduct, property, value)
+        this.setState({ workingProduct: workingProduct });
     }
 
     onChange(e) {
-        this.productEditFormChange(e.target.name, e.target.value);
+        var val = e.target.value
+        if (e.target.type === 'number') {
+            val = (val.indexOf('.') === -1 ? parseInt(val) : parseFloat(val))
+        }
+        this.productEditFormChange(e.target.name, val);
     }
 
     onCurrencyChange(currency) {
@@ -93,17 +117,16 @@ class Product extends React.Component {
 
     onRelatedProductsChange(e) {
         var value = Array.from(e.target.selectedOptions, option => parseInt(option.value));
-        this.setState(
-            (state) => {
-                state.workingProduct.relatedProducts = value
-            }
-        );
+        var workingProduct = { ...this.state.workingProduct };
+        workingProduct.relatedProducts = value;
+        this.setState({ workingProduct: workingProduct });
     }
 
     buildRelatedProductSelect() {
         function productAsSelectOption(product) { return (<option key={product.id} value={product.id}>{product.id} - {product.name} - ${product.price.amount} {product.price.base}</option>) };
 
-        var allProducts = this.props.productService.cache;
+        //no self referencing allowed
+        var allProducts = this.props.productService.cache.filter(prod => prod.id !== this.state.productId);
 
         return (
             <select
@@ -144,12 +167,14 @@ class Product extends React.Component {
 
                     <div className="mb-3">
                         <label htmlFor="productId" className="form-label">Id</label>
-                        <input type="number" className="form-control" id="productId" name="id" value={this.state?.workingProduct?.id} onChange={this.onChange} />
+                        <input type="number" step="1" className="form-control" id="productId" name="id" value={this.state?.workingProduct?.id} onChange={this.onChange} />
+                        {this.validator.message('productId', this.state?.workingProduct?.id, 'required|idValidator|numeric|min:0,num')}
                     </div>
 
                     <div className="mb-3">
                         <label htmlFor="productName" className="form-label">Product Name</label>
                         <input type="text" className="form-control" id="productName" name="name" value={this.state?.workingProduct?.name} onChange={this.onChange} />
+                        {this.validator.message('productName', this.state?.workingProduct?.name, 'required|min:3')}
                     </div>
 
                     <div className="mb-3">
@@ -162,7 +187,8 @@ class Product extends React.Component {
                             <label htmlFor="productPrice" className="form-label">Price</label>
                             <div className="input-group">
                                 <span className="input-group-text">$</span>
-                                <input type="text" className="form-control" id="productPrice" name="price.amount" value={this.state?.workingProduct?.price?.amount} onChange={this.onChange} />
+                                <input type="number" step="0.01" className="form-control" id="productPrice" name="price.amount" value={this.state?.workingProduct?.price?.amount} onChange={this.onChange} />
+                                {this.validator.message('productPrice', this.state?.workingProduct?.price.amount, 'required|numeric|min:0,num')}
                             </div>
                         </div>
                         <div className="col-sm">
