@@ -58,6 +58,9 @@ At any time the user can click 'View All' which will clear `ProductList`'s selec
 
 
 Upon reflection an alternative (read: better) flow of data would have been to flatten everything and store the state of the currently viewed `productId` in `<App>`. When `ProductId` is null `<Product>` isn't rendered and `<ProductList>` displays all products. When `ProductId` is not null then `<Product>` is rendered and `ProductList` displays related products. `currentCurrency` would also have less 'travel distance' as it isn't being passed multiple times.
+
+After writing the above I went ahead and did it.
+
 ```
 <App>
 	<CurrencyPicker/>
