@@ -117,8 +117,13 @@ class Product extends React.Component {
         //id has changed from what was loaded
         if (this.props.productId !== null && this.props.productId != workingProduct.id) {
             this.props.productService.deleteById(this.props.productId);
-            this.props.productService.updateRelatedProductIds(this.props.productId, workingProduct.id);
+            this.props.productService.cleanupRelatedProducts(this.props.productId, workingProduct.id);
         }
+
+        var oldRelatedProducts = this.state?.product?.relatedProducts ?? [];
+        var newRelatedProducts = workingProduct.relatedProducts;
+
+        this.props.productService.updateRelatedProductIds(workingProduct.id, oldRelatedProducts, newRelatedProducts);
 
         if (this.props['onProductChange']) {
             this.props.onProductChange(workingProduct.id)

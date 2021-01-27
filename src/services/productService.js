@@ -14,7 +14,7 @@ export default class ProductService extends AbstractService {
         return prod.relatedProducts.map(relId => this.getById(relId))
     }
 
-    updateRelatedProductIds(oldId, newId) {
+    cleanupRelatedProducts(oldId, newId) {
 
         this.cache.forEach(prod => {
 
@@ -26,6 +26,41 @@ export default class ProductService extends AbstractService {
             prod.relatedProducts[index] = newId;
 
         });
+    }
 
+    updateRelatedProductIds(id, prevRelatedProducts, currRelatedProducts) {
+
+        var dels = prevRelatedProducts.filter(val => !currRelatedProducts.includes(val));
+        var adds = currRelatedProducts.filter(val => !prevRelatedProducts.includes(val));
+
+        dels.forEach(relProdId => {
+
+            var relProd = this.getById(relProdId);
+
+            if (!relProd)
+                return;
+
+            var ind = relProd.relatedProducts.indexOf(id)
+
+            if (ind === -1)
+                return;
+
+            relProd.relatedProducts.splice(ind, 1);
+        });
+
+        adds.forEach(relProdId => {
+
+            var relProd = this.getById(relProdId);
+
+            if (!relProd)
+                return;
+
+            var ind = relProd.relatedProducts.indexOf(id)
+
+            if (ind !== -1)
+                return;
+
+            relProd.relatedProducts.push(id);
+        });
     }
 }
