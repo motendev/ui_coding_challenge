@@ -7,7 +7,7 @@ import Product from './product'
  *  currencyService (required)
  *  productService (required)
  *  currentCurrency (required)
- *  onProductChange (optional) - if provided will be called when user selects a product, if not provided the default behaviour of viewing the product will occur
+ *  onProductSelected (optional) - if provided will be called when user selects a product, if not provided the default behaviour of viewing the product will occur
  *  products (optional) - if provided, limits the productList to render the given data
  */
 class ProductList extends React.Component {
@@ -16,7 +16,6 @@ class ProductList extends React.Component {
         super(props)
         this.state = {
             products: [],
-            selectedProduct: null,
             isLoaded: (this.props.products ?? []).length >= 1,
             error: null
         }
@@ -40,7 +39,12 @@ class ProductList extends React.Component {
     }
 
     listProductItems() {
-        var products = this.getProducts();
+        var products = [];
+
+        if (this.props.selectedProductId !== null)
+            products = this.props.productService.getRelatedProducts(this.props.selectedProductId);
+        else
+            products = this.getProducts();
 
         if (!Array.isArray(products))
             return;
@@ -50,42 +54,25 @@ class ProductList extends React.Component {
                 <th>{obj.id}</th>
                 <td>{obj.name}</td>
                 <td>${this.props.currencyService.convertFromXToY(this.props.currentCurrency, obj.price.base, obj.price.amount)}</td>
-                <td><button type="button" className="btn btn-primary" onClick={() => this.onProductChange(obj.id)}>View</button></td>
+                <td><button type="button" className="btn btn-primary" onClick={() => this.onProductSelected(obj.id)}>View</button></td>
             </tr>
         );
     }
 
-    onProductChange(id) {
-        if (this.props['onProductChange'])
-            this.props.onProductChange(id)
-        else
-            this.setState({ selectedProduct: id })
+    onProductSelected(id) {
+        if (this.props['onProductSelected'])
+            this.props.onProductSelected(id)
     }
 
     render() {
 
-        const { isLoaded, error, selectedProduct } = this.state
+        const { isLoaded, error } = this.state
 
         if (!isLoaded)
             return (<div>Loading...</div>)
 
         if (error)
             return (<div>An error has occurred</div>)
-
-        if (selectedProduct)
-            return (
-                <div>
-                    <Product
-                        productId={selectedProduct}
-                        productService={this.props.productService}
-                        currencyService={this.props.currencyService}
-                        currentCurrency={this.props.currentCurrency}
-                        onProductChange={() => this.loadData()}
-                    />
-                    <br />
-                    <button type="button" className="btn btn-primary" onClick={() => this.onProductChange(null)}>View All</button>
-                </div>
-            )
 
         return (
             <div className="productList">

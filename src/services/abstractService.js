@@ -46,6 +46,17 @@ export default class AbstractService {
         return array[0];
     }
 
+    deleteById(id) {
+        var index = this.findIndexById(id);
+
+        //not found
+        if (index === -1)
+            return null;
+
+
+        return this.cache.splice(index, 1);
+    }
+
     filterById(id, existingDataSet) {
         if (existingDataSet === null || this.cache === null)
             return;

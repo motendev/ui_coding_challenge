@@ -18,19 +18,14 @@ class Product extends React.Component {
     constructor(props) {
         super(props)
 
-        if (!props.isEditMode)
-            var productState = this.buildProductState(this.props.productId);
-
-        this.state = {
-            ...productState,
-            isEditMode: !!this.props.isEditMode
-        }
+        this.state = this.buildState();
 
         this.editProduct = this.editProduct.bind(this);
         this.saveProduct = this.saveProduct.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onCurrencyChange = this.onCurrencyChange.bind(this);
         this.onRelatedProductsChange = this.onRelatedProductsChange.bind(this);
+        this.cancelEdit = this.cancelEdit.bind(this);
 
         this.validator = new SimpleReactValidator({
             validators: {
@@ -40,6 +35,25 @@ class Product extends React.Component {
                 }
             }
         });
+    }
+
+    buildState() {
+        var productState = {};
+
+        if (!this.props.isEditMode)
+            var productState = this.buildProductState(this.props.productId);
+
+        return {
+            ...productState,
+            isEditMode: !!this.props.isEditMode
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.productId === prevProps.productId)
+            return;
+
+        this.setState(this.buildState());
     }
 
     //Returns true if valid: id is not being used already or the productid is set in the state and is the same as the form product id
@@ -53,13 +67,12 @@ class Product extends React.Component {
 
     buildProductState(id) {
         var product = this.props.productService.getById(id);
-        var relatedProducts = product.relatedProducts.map(relId => this.props.productService.getById(relId))
+        var relatedProducts = this.props.productService.getRelatedProducts(id, product);
 
         return {
             productId: id,
             product: product,
-            relatedProducts: relatedProducts,
-            workingProduct: { price: { base: this.props.currentCurrency } }
+            relatedProducts: relatedProducts
         }
     }
 
@@ -68,8 +81,18 @@ class Product extends React.Component {
     }
 
     editProduct() {
+        if (this.props['onProductEdit'])
+            this.props.onProductEdit(true);
+
         //quick clone with JSON
         this.setState({ isEditMode: true, workingProduct: JSON.parse(JSON.stringify(this.state.product)) });
+    }
+
+    cancelEdit() {
+        this.setState({ isEditMode: false });
+        if (this.props['onProductChange']) {
+            this.props.onProductChange(this.props.productId)
+        }
     }
 
     saveProduct(e) {
@@ -83,23 +106,25 @@ class Product extends React.Component {
         }
 
         var workingProduct = this.state.workingProduct;
-
-        //productId exists if editing an existing product 
-        var id = this.state?.productId ?? workingProduct.id;
         //Not a fan of parsing data in a save method. Need to automatically bind a form to a stongly typed object
-        id = parseInt(id);
-        workingProduct.id = id;
+        workingProduct.id = parseInt(workingProduct.id);
         //ensure property is declared, again solved by having a strongly typed object
         workingProduct.relatedProducts = workingProduct.relatedProducts ?? [];
+        workingProduct.price.base = workingProduct.price.base ?? this.props.currentCurrency;
 
-        this.props.productService.upsert(id, workingProduct);
+        this.props.productService.upsert(workingProduct.id, workingProduct);
 
-        if (this.props['onProductChange']) {
-            this.props.onProductChange(id)
+        //id has changed from what was loaded
+        if (this.props.productId !== null && this.props.productId != workingProduct.id) {
+            this.props.productService.deleteById(this.props.productId);
+            this.props.productService.updateRelatedProductIds(this.props.productId, workingProduct.id);
         }
 
+        if (this.props['onProductChange']) {
+            this.props.onProductChange(workingProduct.id)
+        }
 
-        var productState = this.buildProductState(id);
+        var productState = this.buildProductState(workingProduct.id);
         this.setState({
             ...productState,
             isEditMode: false
@@ -151,23 +176,6 @@ class Product extends React.Component {
         )
     }
 
-    renderProductList() {
-        return (
-            <div>
-                <h3>Related Products</h3>
-                <div>
-                    <ProductList
-                        products={this.state.relatedProducts}
-                        productService={this.props.productService}
-                        currencyService={this.props.currencyService}
-                        currentCurrency={this.props.currentCurrency}
-                        onProductChange={this.onProductChange.bind(this)}
-                    />
-                </div>
-            </div>
-        )
-    }
-
     render() {
 
         if (this.state.isEditMode) {
@@ -197,7 +205,7 @@ class Product extends React.Component {
                             <div className="input-group">
                                 <span className="input-group-text">$</span>
                                 <input type="number" step="0.01" className="form-control" id="productPrice" name="price.amount" value={this.state?.workingProduct?.price?.amount} onChange={this.onChange} />
-                                {this.validator.message('productPrice', this.state?.workingProduct?.price.amount, 'required|numeric|min:0,num')}
+                                {this.validator.message('productPrice', this.state?.workingProduct?.price?.amount, 'required|numeric|min:0,num')}
                             </div>
                         </div>
                         <div className="col-sm">
@@ -211,6 +219,7 @@ class Product extends React.Component {
                         {this.buildRelatedProductSelect()}
                     </div>
                     <button type="button" className="btn btn-primary" onClick={this.saveProduct}>Save</button>
+                    <button type="button" className="btn btn-primary" onClick={this.cancelEdit}>Cancel</button>
                 </form>
             )
         }
@@ -225,7 +234,6 @@ class Product extends React.Component {
                         <div type="button" className="btn btn-primary" onClick={this.editProduct}>Edit</div>
                     </div>
                 </div>
-                {this.renderProductList()}
             </div>
         )
     }
