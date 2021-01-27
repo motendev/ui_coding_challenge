@@ -1,44 +1,40 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
-
+/**
+ * Renders a list of products either from 'product' property or retrieved from required 'productService' property.
+ * Properties: 
+ *  onCurrencyChange (required) - new value will be passed when select.onChange occurs
+ */
 class CurrencyPicker extends React.Component {
 
-    constructor(props)
-    {
+    constructor(props) {
         super(props)
 
         this.state = {
             currencies: [],
             onCurrencyChange: this.props.onCurrencyChange
-        } 
+        }
     }
 
-    componentDidMount()
-    {
+    componentDidMount() {
         this.props.currencyService.getCachedData().then(
-            (res) => {
-                console.log(res)
-                this.setState({currencies:res, isLoaded: true})
-            },
-            (error) => 
-                this.setState({error: error})
-            )       
+            (res) => this.setState({ currencies: res, isLoaded: true }),
+            (error) => this.setState({ error: error })
+        )
     }
 
-    listCurrencies()
-    {
+    listCurrencies() {
         return this.state.currencies.map((obj) =>
             <option key={obj.base} value={obj.base}>
                 {obj.base}
             </option>
-       );
+        );
     }
 
     render() {
-        
+
         return (
-            <select className="form-select" aria-label="Default select siteCurrency" onChange={(e)=>this.state.onCurrencyChange(e.target.value)} value={this.props.currentCurrency} defaultValue={this.props.currentCurrency}>
+            <select className="form-select" aria-label="Default select siteCurrency" onChange={(e) => this.state.onCurrencyChange(e.target.value)} value={this.props.currentCurrency}>
                 {this.listCurrencies()}
             </select>
         )
