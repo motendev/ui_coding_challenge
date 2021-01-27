@@ -1,6 +1,5 @@
 import React from 'react';
 import CurrencyPicker from './currencyPicker';
-import ProductList from './productList'
 import { setProperty } from '../code/setProperty'
 import SimpleReactValidator from 'simple-react-validator';
 
@@ -41,11 +40,12 @@ class Product extends React.Component {
         var productState = {};
 
         if (!this.props.isEditMode)
-            var productState = this.buildProductState(this.props.productId);
+            productState = this.buildProductState(this.props.productId);
 
         return {
             ...productState,
-            isEditMode: !!this.props.isEditMode
+            isEditMode: !!this.props.isEditMode,
+            workingProduct: this.props.productService.getDefaultObject()
         }
     }
 
@@ -115,7 +115,7 @@ class Product extends React.Component {
         this.props.productService.upsert(workingProduct.id, workingProduct);
 
         //id has changed from what was loaded
-        if (this.props.productId !== null && this.props.productId != workingProduct.id) {
+        if (this.props.productId !== null && this.props.productId !== workingProduct.id) {
             this.props.productService.deleteById(this.props.productId);
             this.props.productService.cleanupRelatedProducts(this.props.productId, workingProduct.id);
         }
@@ -190,7 +190,7 @@ class Product extends React.Component {
                     <div className="mb-3">
                         <label htmlFor="productId" className="form-label">Id</label>
                         <input type="number" step="1" className="form-control" id="productId" name="id" value={this.state?.workingProduct?.id} onChange={this.onChange} />
-                        {this.validator.message('productId', this.state?.workingProduct?.id, 'required|idValidator|numeric|min:0,num')}
+                        {this.validator.message('productId', this.state?.workingProduct?.id, 'required|idValidator|numeric|min:1,num')}
                     </div>
 
                     <div className="mb-3">

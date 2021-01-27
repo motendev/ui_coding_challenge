@@ -1,5 +1,5 @@
 import './App.css';
-import React, { Fragment } from 'react';
+import React from 'react';
 import ProductList from './ui/productList.js';
 import Product from './ui/product.js';
 import CurrencyPicker from './ui/currencyPicker.js'

@@ -5,6 +5,19 @@ export default class ProductService extends AbstractService {
         super('id', '/data/products.json')
     }
 
+    getDefaultObject() {
+        return {
+            'id': 0,
+            'name': '',
+            'description': '',
+            'price': {
+                'base': 'AUD',
+                'amount': 0
+            },
+            'relatedProducts': []
+        };
+    }
+
     getRelatedProducts(id, existingProduct) {
         var prod = existingProduct;
 

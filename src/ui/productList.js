@@ -1,5 +1,4 @@
 import React from 'react';
-import Product from './product'
 
 /**
  * Renders a list of products either from 'product' property or retrieved from required 'productService' property.
