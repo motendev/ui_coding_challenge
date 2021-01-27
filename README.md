@@ -7,7 +7,7 @@ All the requirements listed in the 'MVP' and 'Bonus Points' have been reached.
 
 ## Overview
 
-The app was built using the `create-react-app` NPM package as I wanted a quick way to get straight to programming. As I mentioned during the phone interview I had experience maintain a react app but not building one.
+The app was built using the `create-react-app` NPM package as I wanted a quick way to get straight to programming. As I mentioned during the phone interview I had experience maintaining a react app but not building one from scratch.
 I was going to add Redux at the end so I can appreciate/experience the process of adding it and have an understanding of application flow before and afterwards but I thought enough time had been spent.
 
 There are four react components:
@@ -57,7 +57,7 @@ At any time the user can click 'View All' which will clear `ProductList`'s selec
 
 
 
-Upon reflection an alternative (read: better) flow of data would have been to flatten everything. And store the state of the currently viewed `productId` in `<App>`. When `ProductId` is null `<Product>` isn't rendered and `<ProductList>` displays all products. When `ProductId` is not null then `<Product>` is rendered and `ProductList` displays related products. `currentCurrency` would also have less 'travel distance' as it isn't being passed multiple times.
+Upon reflection an alternative (read: better) flow of data would have been to flatten everything and store the state of the currently viewed `productId` in `<App>`. When `ProductId` is null `<Product>` isn't rendered and `<ProductList>` displays all products. When `ProductId` is not null then `<Product>` is rendered and `ProductList` displays related products. `currentCurrency` would also have less 'travel distance' as it isn't being passed multiple times.
 ```
 <App>
 	<CurrencyPicker/>
