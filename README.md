@@ -1,9 +1,9 @@
 
+
 # Coding Challenge TL;DR
-As per the brief, this application allows the user from 'XYZ Clothing' to view, edit and create products. 
-Creating products wasn't explicitly mentioned but I added it in anyway because I wanted at least to have "CRU" out of "CRUD"; you can't delete anything. 
+As per the brief, this application allows the user from 'XYZ Clothing' to view, edit and create products. Creating products wasn't explicitly mentioned but I added it in anyway because I wanted at least to have "CRU" out of "CRUD"; you can't delete anything. 
 All the requirements listed in the 'MVP' and 'Bonus Points' have been reached.
-`npm start` to get going
+`npm install` followed by `npm start` to get going.
 
 ## Overview
 
@@ -21,25 +21,21 @@ There are four react components:
 `<CurrencyPicker>` is a simple wrapper around a `<select>`
 `<ProductList>` lists products but also renders a product if selected
 `<Product>` shows product information, allows you to edit it and also displays a list of related products by using `<ProductList>`. 
-Through the use of callbacks, when you select a related product it updates the current product state rather than rendering a new product i.e. it isn't a repeating `<Product> -> <ProductList> -> <Product>` pattern.
 When `<Product>` is in edit mode it renders a`<CurrencyPicker>` for selecting a currency but only the top level `<CurrencyPicker` has any cross-component state effects due to the callback, so it won't be mentioned during data flow discussion.
 ```
 <App>
 	<CurrencyPicker/>
-	<ProductList/>
-		<Product/>
-			<ProductList/>
 	<Product/>
+	<ProductList/>
 ```
 
 ##### Product Selection Flow
 ```mermaid
 	sequenceDiagram
-	App ->> ProductList: parent of
-	ProductList->>Product: view product
-	Product->>RelatedProductList: show related products
-	RelatedProductList->>Product: product selected
-	Product-->>Product: re-render
+	App->>ProductList: parent of
+	ProductList->>App: view product
+	App->>ProductList: show related products
+	App->>Product: product selected
 ```
 
 At any time the user can click 'View All' which will clear `ProductList`'s selected product and re-render the table.
@@ -51,26 +47,18 @@ At any time the user can click 'View All' which will clear `ProductList`'s selec
 	App ->> CurrencyPicker: provides currencyChanged()
 	CurrencyPicker->>App: currencyChanged() invoked
 	App ->> ProductList: currentCurrency = 'AUD'
-	ProductList->> Product: currentCurrency = 'AUD'
-	Product->> RelatedProductList: currentCurrency = 'AUD'
+	App ->> Product: currentCurrency = 'AUD'
 ```
 
+### Future Changes
+Make use of `<React.context>` where I would put the 'services' that the components passing them via `React.props`.
+Error handling
+Unit tests
 
+### End
 
-Upon reflection an alternative (read: better) flow of data would have been to flatten everything and store the state of the currently viewed `productId` in `<App>`. When `ProductId` is null `<Product>` isn't rendered and `<ProductList>` displays all products. When `ProductId` is not null then `<Product>` is rendered and `ProductList` displays related products. `currentCurrency` would also have less 'travel distance' as it isn't being passed multiple times.
-
-After writing the above I went ahead and did it.
-
-```
-<App>
-	<CurrencyPicker/>
-	<Product/>
-	<ProductList/>
-```
-
-Another change I would make would be to make use of `<React.context>` where I would put the 'services' that the components passing them via React.props.
-
-The following instructions are from the "Create-React-App" readme:
+The following instructions are from the "Create-React-App" readme.
+Ensure to `npm install` first.
 
 # Getting Started with Create React App
 
