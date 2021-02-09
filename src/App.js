@@ -14,17 +14,18 @@ class App extends React.Component {
 
         //TODO: config for defaultCurrency
 
-        this.state = {
-            ...this.NO_PRODUCT,
-            currentCurrency: 'AUD',
-            productService: new ProductService(),
-            currencyService: new CurrencyService(),
-        }
-
         this.onCurrencyChange = this.onCurrencyChange.bind(this);
         this.onProductCreated = this.onProductCreated.bind(this);
         this.onProductSelected = this.onProductSelected.bind(this);
         this.onProductEdit = this.onProductEdit.bind(this);
+
+        this.state = {
+            ...this.NO_PRODUCT,
+            currentCurrency: 'AUD',
+            onCurrencyChange: this.onCurrencyChange,
+            productService: new ProductService(),
+            currencyService: new CurrencyService(),
+        }
     }
 
     NEW_PRODUCT = { selectedProductId: null, createNewProduct: true, productIsEditing: true }
@@ -105,7 +106,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <CurrencyContext.Provider value={{ currentCurrency: this.state.currentCurrency, onCurrencyChange: this.onCurrencyChange }}>
+            <CurrencyContext.Provider value={this.state}>
                 <div className="container">
                     <nav className="navbar navbar-expand-sm">
                         <div className="container-fluid">
