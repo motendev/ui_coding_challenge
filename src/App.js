@@ -5,6 +5,7 @@ import Product from './ui/product.js';
 import CurrencyPicker from './ui/currencyPicker.js'
 import ProductService from './services/productService.js'
 import CurrencyService from './services/currencyService.js'
+import { CurrencyContext } from './code/CurrencyContext';
 
 class App extends React.Component {
 
@@ -15,7 +16,7 @@ class App extends React.Component {
 
         this.state = {
             ...this.NO_PRODUCT,
-            currentCurrency: "AUD",
+            currentCurrency: 'AUD',
             productService: new ProductService(),
             currencyService: new CurrencyService(),
         }
@@ -104,21 +105,23 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container">
-                <nav className="navbar navbar-expand-sm">
-                    <div className="container-fluid">
-                        <span className="navbar-brand">XYZ Clothing</span>
-                        <div className="me-2">
-                            <CurrencyPicker currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange} />
+            <CurrencyContext.Provider value={{ currentCurrency: this.state.currentCurrency, onCurrencyChange: this.onCurrencyChange }}>
+                <div className="container">
+                    <nav className="navbar navbar-expand-sm">
+                        <div className="container-fluid">
+                            <span className="navbar-brand">XYZ Clothing</span>
+                            <div className="me-2">
+                                <CurrencyPicker currencyService={this.state.currencyService} />
+                            </div>
                         </div>
-                    </div>
-                </nav>
-                <main>
-                    {this.renderNewProduct()}
-                    {this.renderList()}
-                    {this.renderButtons()}
-                </main>
-            </div>
+                    </nav>
+                    <main>
+                        {this.renderNewProduct()}
+                        {this.renderList()}
+                        {this.renderButtons()}
+                    </main>
+                </div>
+            </CurrencyContext.Provider>
         );
     }
 
