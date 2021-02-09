@@ -1,5 +1,4 @@
 import React from 'react';
-import { CurrencyContext } from '../code/CurrencyContext';
 
 /**
  * Renders a list of products either from 'product' property or retrieved from required 'productService' property.
@@ -35,13 +34,9 @@ class CurrencyPicker extends React.Component {
     render() {
 
         return (
-            <CurrencyContext.Consumer>
-                {({ currentCurrency, onCurrencyChange }) => (
-                    <select className="form-select" aria-label="Default select siteCurrency" onChange={(e) => onCurrencyChange(e.target.value)} value={currentCurrency}>
-                        {this.listCurrencies()}
-                    </select>
-                )}
-            </CurrencyContext.Consumer>
+            <select className="form-select" aria-label="Default select siteCurrency" onChange={(e) => this.state.onCurrencyChange(e.target.value)} value={this.props.currentCurrency}>
+                {this.listCurrencies()}
+            </select>
         )
     }
 }

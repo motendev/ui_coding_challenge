@@ -67,7 +67,6 @@ class App extends React.Component {
                     selectedProductId={this.state.selectedProductId}
                     productService={this.state.productService}
                     currencyService={this.state.currencyService}
-                    currentCurrency={this.state.currentCurrency}
                     onProductSelected={this.onProductSelected}
                 />
             </React.Fragment>
@@ -83,7 +82,6 @@ class App extends React.Component {
                 productId={this.state.selectedProductId}
                 productService={this.state.productService}
                 currencyService={this.state.currencyService}
-                currentCurrency={this.state.currentCurrency}
                 isEditMode={this.state.createNewProduct}
                 onProductChange={this.onProductCreated}
                 onProductEdit={this.onProductEdit}
@@ -112,7 +110,7 @@ class App extends React.Component {
                         <div className="container-fluid">
                             <span className="navbar-brand">XYZ Clothing</span>
                             <div className="me-2">
-                                <CurrencyPicker currencyService={this.state.currencyService} />
+                                <CurrencyPicker currencyService={this.state.currencyService} onCurrencyChange={this.onCurrencyChange} currentCurrency={this.state.currentCurrency} />
                             </div>
                         </div>
                     </nav>

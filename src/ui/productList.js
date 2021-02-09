@@ -1,4 +1,5 @@
 import React from 'react';
+import { CurrencyContext } from '../code/CurrencyContext';
 
 /**
  * Renders a list of products either from 'product' property or retrieved from required 'productService' property.
@@ -10,6 +11,7 @@ import React from 'react';
  *  products (optional) - if provided, limits the productList to render the given data
  */
 class ProductList extends React.Component {
+    static contextType = CurrencyContext;
 
     constructor(props) {
         super(props)
@@ -52,7 +54,7 @@ class ProductList extends React.Component {
             <tr key={obj.id.toString()}>
                 <th>{obj.id}</th>
                 <td>{obj.name}</td>
-                <td>${this.props.currencyService.convertFromXToY(this.props.currentCurrency, obj.price.base, obj.price.amount)}</td>
+                <td>${this.props.currencyService.convertFromXToY(this.context.currentCurrency, obj.price.base, obj.price.amount)}</td>
                 <td><button type="button" className="btn btn-primary" onClick={() => this.onProductSelected(obj.id)}>View</button></td>
             </tr>
         );
