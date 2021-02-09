@@ -2,6 +2,7 @@ import React from 'react';
 import CurrencyPicker from './currencyPicker';
 import { setProperty } from '../code/setProperty'
 import SimpleReactValidator from 'simple-react-validator';
+import { CurrencyContext } from '../code/CurrencyContext';
 
 /**
  * Renders a product with the ability to also edit/create products
@@ -13,6 +14,8 @@ import SimpleReactValidator from 'simple-react-validator';
  *  isEditMode (optional) - if provided the component will load the product form allowing the user to edit if productId is provided, or create a new product otherwise
  */
 class Product extends React.Component {
+
+    static contextType = CurrencyContext;
 
     constructor(props) {
         super(props)
@@ -110,7 +113,7 @@ class Product extends React.Component {
         workingProduct.id = parseInt(workingProduct.id);
         //ensure property is declared, again solved by having a strongly typed object
         workingProduct.relatedProducts = workingProduct.relatedProducts ?? [];
-        workingProduct.price.base = workingProduct.price.base ?? this.props.currentCurrency;
+        workingProduct.price.base = workingProduct.price.base ?? this.context.currentCurrency;
 
         this.props.productService.upsert(workingProduct.id, workingProduct);
 
@@ -235,7 +238,7 @@ class Product extends React.Component {
                     <div className="card-body">
                         <h5 className="card-title">{this.state.product.name}</h5>
                         <p className="card-text">{this.state.product.description}</p>
-                        <p>${this.props.currencyService.convertFromXToY(this.props.currentCurrency, this.state.product.price.base, this.state.product.price.amount)}</p>
+                        <p>${this.props.currencyService.convertFromXToY(this.context.currentCurrency, this.state.product.price.base, this.state.product.price.amount)}</p>
                         <div type="button" className="btn btn-primary" onClick={this.editProduct}>Edit</div>
                     </div>
                 </div>

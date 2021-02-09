@@ -5,6 +5,7 @@ import Product from './ui/product.js';
 import CurrencyPicker from './ui/currencyPicker.js'
 import ProductService from './services/productService.js'
 import CurrencyService from './services/currencyService.js'
+import { CurrencyContext } from './code/CurrencyContext';
 
 class App extends React.Component {
 
@@ -13,17 +14,18 @@ class App extends React.Component {
 
         //TODO: config for defaultCurrency
 
-        this.state = {
-            ...this.NO_PRODUCT,
-            currentCurrency: "AUD",
-            productService: new ProductService(),
-            currencyService: new CurrencyService(),
-        }
-
         this.onCurrencyChange = this.onCurrencyChange.bind(this);
         this.onProductCreated = this.onProductCreated.bind(this);
         this.onProductSelected = this.onProductSelected.bind(this);
         this.onProductEdit = this.onProductEdit.bind(this);
+
+        this.state = {
+            ...this.NO_PRODUCT,
+            currentCurrency: 'AUD',
+            onCurrencyChange: this.onCurrencyChange,
+            productService: new ProductService(),
+            currencyService: new CurrencyService(),
+        }
     }
 
     NEW_PRODUCT = { selectedProductId: null, createNewProduct: true, productIsEditing: true }
@@ -65,7 +67,6 @@ class App extends React.Component {
                     selectedProductId={this.state.selectedProductId}
                     productService={this.state.productService}
                     currencyService={this.state.currencyService}
-                    currentCurrency={this.state.currentCurrency}
                     onProductSelected={this.onProductSelected}
                 />
             </React.Fragment>
@@ -81,7 +82,6 @@ class App extends React.Component {
                 productId={this.state.selectedProductId}
                 productService={this.state.productService}
                 currencyService={this.state.currencyService}
-                currentCurrency={this.state.currentCurrency}
                 isEditMode={this.state.createNewProduct}
                 onProductChange={this.onProductCreated}
                 onProductEdit={this.onProductEdit}
@@ -104,21 +104,23 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container">
-                <nav className="navbar navbar-expand-sm">
-                    <div className="container-fluid">
-                        <span className="navbar-brand">XYZ Clothing</span>
-                        <div className="me-2">
-                            <CurrencyPicker currencyService={this.state.currencyService} currentCurrency={this.state.currentCurrency} onCurrencyChange={this.onCurrencyChange} />
+            <CurrencyContext.Provider value={this.state}>
+                <div className="container">
+                    <nav className="navbar navbar-expand-sm">
+                        <div className="container-fluid">
+                            <span className="navbar-brand">XYZ Clothing</span>
+                            <div className="me-2">
+                                <CurrencyPicker currencyService={this.state.currencyService} onCurrencyChange={this.onCurrencyChange} currentCurrency={this.state.currentCurrency} />
+                            </div>
                         </div>
-                    </div>
-                </nav>
-                <main>
-                    {this.renderNewProduct()}
-                    {this.renderList()}
-                    {this.renderButtons()}
-                </main>
-            </div>
+                    </nav>
+                    <main>
+                        {this.renderNewProduct()}
+                        {this.renderList()}
+                        {this.renderButtons()}
+                    </main>
+                </div>
+            </CurrencyContext.Provider>
         );
     }
 
